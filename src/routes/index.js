@@ -6,6 +6,16 @@ router.get("/", (req, res) => {
   res.send("API is running");
 });
 
+/**
+ * @swagger
+ * /health:
+ *   get:
+ *     summary: Health check endpoint
+ *     description: Returns the current API status.
+ *     responses:
+ *       200:
+ *         description: Server is running successfully
+ */
 router.get("/health", (req, res) => {
   res.status(200).json({
     status: "ok",

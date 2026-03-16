@@ -2,6 +2,7 @@ const express = require("express");
 const authRoutes = require("./authRoutes");
 const profileRoutes = require("./profileRoutes");
 const router = express.Router();
+const degreeRoutes = require("./degreeRoutes");
 
 router.get("/", (req, res) => {
   res.send("API is running");
@@ -27,5 +28,6 @@ router.get("/health", (req, res) => {
 /* auth routes */
 router.use("/auth", authRoutes);
 router.use("/profile", profileRoutes);
+router.use("/degrees", degreeRoutes);
 
 module.exports = router;

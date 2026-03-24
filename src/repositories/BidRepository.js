@@ -26,8 +26,11 @@ const bidRepository = {
 
   findByUserId: (userId) => {
     return new Promise((resolve, reject) => {
-      const sql =
-        "SELECT * FROM bids WHERE user_id = ? ORDER BY created_at DESC";
+      const sql = `
+        SELECT * FROM bids
+        WHERE user_id = ?
+        ORDER BY created_at DESC
+      `;
 
       db.all(sql, [userId], (err, rows) => {
         if (err) {
@@ -35,6 +38,46 @@ const bidRepository = {
         }
 
         resolve(rows);
+      });
+    });
+  },
+
+  findLatestByUserId: (userId) => {
+    return new Promise((resolve, reject) => {
+      const sql = `
+        SELECT * FROM bids
+        WHERE user_id = ?
+        ORDER BY created_at DESC
+        LIMIT 1
+      `;
+
+      db.get(sql, [userId], (err, row) => {
+        if (err) {
+          return reject(err);
+        }
+
+        resolve(row);
+      });
+    });
+  },
+
+  updateBidAmount: (bidId, newAmount) => {
+    return new Promise((resolve, reject) => {
+      const sql = `
+        UPDATE bids
+        SET bid_amount = ?
+        WHERE id = ?
+      `;
+
+      db.run(sql, [newAmount, bidId], function (err) {
+        if (err) {
+          return reject(err);
+        }
+
+        resolve({
+          id: bidId,
+          bid_amount: newAmount,
+        });
       });
     });
   },

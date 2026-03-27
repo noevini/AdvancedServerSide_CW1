@@ -8,6 +8,7 @@ const licenceRoutes = require("./licenceRoutes");
 const shortCourseRoutes = require("./shortCourseRoutes");
 const employmentRoutes = require("./employmentRoutes");
 const bidRoutes = require("./bidRoutes");
+const apiTokenRoutes = require("./apiTokenRoutes");
 
 router.get("/", (req, res) => {
   res.send("API is running");
@@ -39,5 +40,6 @@ router.use("/licences", licenceRoutes);
 router.use("/short-courses", shortCourseRoutes);
 router.use("/employment-history", employmentRoutes);
 router.use("/bids", bidRoutes);
+router.use("/api-tokens", apiTokenRoutes);
 
 module.exports = router;

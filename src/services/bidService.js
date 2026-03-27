@@ -7,7 +7,6 @@ const bidService = {
     }
 
     const existingBid = await bidRepository.findLatestByUserId(userId);
-
     const today = new Date().toISOString().split("T")[0];
 
     if (existingBid) {
@@ -21,19 +20,44 @@ const bidService = {
       );
 
       return {
-        ...updatedBid,
-        status: existingBid.status,
+        ...existingBid,
+        bid_amount: updatedBid.bid_amount,
       };
     }
 
     const bid = await bidRepository.createBid(userId, bidAmount, today);
-
     return bid;
   },
 
   getMyBids: async (userId) => {
     const bids = await bidRepository.findByUserId(userId);
     return bids;
+  },
+
+  selectWinner: async () => {
+    const highestBid = await bidRepository.findHighestBid();
+
+    if (!highestBid) {
+      throw new Error("No bids available");
+    }
+
+    await bidRepository.markAllAsLost();
+    await bidRepository.markAsWinner(highestBid.id);
+
+    return {
+      ...highestBid,
+      status: "WON",
+    };
+  },
+
+  getFeaturedAlumnus: async () => {
+    const highestBid = await bidRepository.findHighestBid();
+
+    if (!highestBid) {
+      throw new Error("No featured alumnus available");
+    }
+
+    return highestBid;
   },
 };
 

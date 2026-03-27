@@ -81,6 +81,59 @@ const bidRepository = {
       });
     });
   },
+
+  findHighestBid: () => {
+    return new Promise((resolve, reject) => {
+      const sql = `
+        SELECT * FROM bids
+        ORDER BY bid_amount DESC, created_at ASC
+        LIMIT 1
+      `;
+
+      db.get(sql, [], (err, row) => {
+        if (err) {
+          return reject(err);
+        }
+
+        resolve(row);
+      });
+    });
+  },
+
+  markAllAsLost: () => {
+    return new Promise((resolve, reject) => {
+      const sql = `
+        UPDATE bids
+        SET status = 'LOST'
+      `;
+
+      db.run(sql, [], function (err) {
+        if (err) {
+          return reject(err);
+        }
+
+        resolve();
+      });
+    });
+  },
+
+  markAsWinner: (bidId) => {
+    return new Promise((resolve, reject) => {
+      const sql = `
+        UPDATE bids
+        SET status = 'WON'
+        WHERE id = ?
+      `;
+
+      db.run(sql, [bidId], function (err) {
+        if (err) {
+          return reject(err);
+        }
+
+        resolve();
+      });
+    });
+  },
 };
 
 module.exports = bidRepository;

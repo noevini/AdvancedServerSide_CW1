@@ -32,6 +32,22 @@ const bidController = {
     }
   },
 
+  cancelMyBid: async (req, res) => {
+    try {
+      const userId = req.user.userId;
+      const cancelledBid = await bidService.cancelMyBid(userId);
+
+      return res.status(200).json({
+        message: "Bid cancelled successfully",
+        bid: cancelledBid,
+      });
+    } catch (error) {
+      return res.status(400).json({
+        error: error.message,
+      });
+    }
+  },
+
   selectWinner: async (req, res) => {
     try {
       const winner = await bidService.selectWinner();
@@ -56,6 +72,43 @@ const bidController = {
       });
     } catch (error) {
       return res.status(404).json({
+        error: error.message,
+      });
+    }
+  },
+
+  getTomorrowSlot: async (req, res) => {
+    try {
+      const slot = await bidService.getTomorrowSlot();
+
+      return res.status(200).json(slot);
+    } catch (error) {
+      return res.status(400).json({
+        error: error.message,
+      });
+    }
+  },
+
+  getMonthlyLimitStatus: async (req, res) => {
+    try {
+      const userId = req.user.userId;
+      const status = await bidService.getMonthlyLimitStatus(userId);
+
+      return res.status(200).json(status);
+    } catch (error) {
+      return res.status(400).json({
+        error: error.message,
+      });
+    }
+  },
+
+  resetAppearanceCounts: async (req, res) => {
+    try {
+      const result = await bidService.resetAppearanceCounts();
+
+      return res.status(200).json(result);
+    } catch (error) {
+      return res.status(400).json({
         error: error.message,
       });
     }

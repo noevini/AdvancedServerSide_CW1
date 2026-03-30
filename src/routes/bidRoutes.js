@@ -26,6 +26,16 @@ router.get("/me", authMiddleware, bidController.getMyBids);
 
 /**
  * @swagger
+ * /bids/cancel:
+ *   post:
+ *     summary: Cancel current bid
+ *     security:
+ *       - bearerAuth: []
+ */
+router.post("/cancel", authMiddleware, bidController.cancelMyBid);
+
+/**
+ * @swagger
  * /bids/select-winner:
  *   post:
  *     summary: Select the highest bid as winner
@@ -41,5 +51,41 @@ router.post("/select-winner", authMiddleware, bidController.selectWinner);
  *     summary: Get the current featured alumnus
  */
 router.get("/featured", bidController.getFeaturedAlumnus);
+
+/**
+ * @swagger
+ * /bids/tomorrow-slot:
+ *   get:
+ *     summary: View tomorrow's slot
+ */
+router.get("/tomorrow-slot", bidController.getTomorrowSlot);
+
+/**
+ * @swagger
+ * /bids/monthly-limit:
+ *   get:
+ *     summary: View monthly limit status
+ *     security:
+ *       - bearerAuth: []
+ */
+router.get(
+  "/monthly-limit",
+  authMiddleware,
+  bidController.getMonthlyLimitStatus,
+);
+
+/**
+ * @swagger
+ * /bids/reset-appearance-counts:
+ *   post:
+ *     summary: Reset all appearance counts
+ *     security:
+ *       - bearerAuth: []
+ */
+router.post(
+  "/reset-appearance-counts",
+  authMiddleware,
+  bidController.resetAppearanceCounts,
+);
 
 module.exports = router;

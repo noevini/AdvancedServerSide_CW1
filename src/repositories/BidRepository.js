@@ -82,10 +82,32 @@ const bidRepository = {
     });
   },
 
+  cancelBid: (bidId) => {
+    return new Promise((resolve, reject) => {
+      const sql = `
+        UPDATE bids
+        SET status = 'CANCELLED'
+        WHERE id = ?
+      `;
+
+      db.run(sql, [bidId], function (err) {
+        if (err) {
+          return reject(err);
+        }
+
+        resolve({
+          id: bidId,
+          status: "CANCELLED",
+        });
+      });
+    });
+  },
+
   findHighestBid: () => {
     return new Promise((resolve, reject) => {
       const sql = `
         SELECT * FROM bids
+        WHERE status != 'CANCELLED'
         ORDER BY bid_amount DESC, created_at ASC
         LIMIT 1
       `;
@@ -105,6 +127,7 @@ const bidRepository = {
       const sql = `
         UPDATE bids
         SET status = 'LOST'
+        WHERE status != 'CANCELLED'
       `;
 
       db.run(sql, [], function (err) {
@@ -131,6 +154,26 @@ const bidRepository = {
         }
 
         resolve();
+      });
+    });
+  },
+
+  countMonthlyWins: (userId, yearMonth) => {
+    return new Promise((resolve, reject) => {
+      const sql = `
+        SELECT COUNT(*) AS total
+        FROM bids
+        WHERE user_id = ?
+          AND status = 'WON'
+          AND strftime('%Y-%m', bid_date) = ?
+      `;
+
+      db.get(sql, [userId, yearMonth], (err, row) => {
+        if (err) {
+          return reject(err);
+        }
+
+        resolve(row.total);
       });
     });
   },

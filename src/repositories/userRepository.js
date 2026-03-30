@@ -87,6 +87,43 @@ const userRepository = {
       });
     });
   },
+
+  incrementAppearanceCount: (userId) => {
+    return new Promise((resolve, reject) => {
+      const sql = `
+      UPDATE users
+      SET appearance_count = COALESCE(appearance_count, 0) + 1
+      WHERE id = ?
+    `;
+
+      db.run(sql, [userId], function (err) {
+        if (err) {
+          return reject(err);
+        }
+
+        resolve({
+          user_id: userId,
+        });
+      });
+    });
+  },
+
+  resetAppearanceCounts: () => {
+    return new Promise((resolve, reject) => {
+      const sql = `
+      UPDATE users
+      SET appearance_count = 0
+    `;
+
+      db.run(sql, [], function (err) {
+        if (err) {
+          return reject(err);
+        }
+
+        resolve();
+      });
+    });
+  },
 };
 
 module.exports = userRepository;

@@ -27,13 +27,58 @@ const certificationController = {
   getCertifications: async (req, res) => {
     try {
       const userId = req.user.userId;
-
       const certifications =
         await certificationService.getCertifications(userId);
 
       return res.status(200).json(certifications);
     } catch (error) {
       return res.status(404).json({
+        error: error.message,
+      });
+    }
+  },
+
+  updateCertification: async (req, res) => {
+    try {
+      const userId = req.user.userId;
+      const { id } = req.params;
+      const { certification_name, provider, year_completed } = req.body;
+
+      const certification = await certificationService.updateCertification(
+        userId,
+        Number(id),
+        certification_name,
+        provider,
+        year_completed,
+      );
+
+      return res.status(200).json({
+        message: "Certification updated successfully",
+        certification,
+      });
+    } catch (error) {
+      return res.status(400).json({
+        error: error.message,
+      });
+    }
+  },
+
+  deleteCertification: async (req, res) => {
+    try {
+      const userId = req.user.userId;
+      const { id } = req.params;
+
+      const result = await certificationService.deleteCertification(
+        userId,
+        Number(id),
+      );
+
+      return res.status(200).json({
+        message: "Certification deleted successfully",
+        result,
+      });
+    } catch (error) {
+      return res.status(400).json({
         error: error.message,
       });
     }

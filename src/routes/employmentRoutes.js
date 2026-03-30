@@ -19,4 +19,19 @@ const router = express.Router();
 router.post("/", authMiddleware, employmentController.createEmployment);
 router.get("/", authMiddleware, employmentController.getEmploymentHistory);
 
+/**
+ * @swagger
+ * /employment-history/{id}:
+ *   put:
+ *     summary: Update an employment record
+ *     security:
+ *       - bearerAuth: []
+ *   delete:
+ *     summary: Delete an employment record
+ *     security:
+ *       - bearerAuth: []
+ */
+router.put("/:id", authMiddleware, employmentController.updateEmployment);
+router.delete("/:id", authMiddleware, employmentController.deleteEmployment);
+
 module.exports = router;

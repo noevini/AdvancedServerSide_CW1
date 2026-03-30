@@ -14,14 +14,12 @@ const licenceService = {
       throw new Error("Profile not found for this user");
     }
 
-    const licence = await licenceRepository.createLicence(
+    return await licenceRepository.createLicence(
       profile.id,
       licenceName,
       issuingAuthority,
       yearCompleted,
     );
-
-    return licence;
   },
 
   getLicences: async (userId) => {
@@ -31,9 +29,50 @@ const licenceService = {
       throw new Error("Profile not found for this user");
     }
 
-    const licences = await licenceRepository.findByProfileId(profile.id);
+    return await licenceRepository.findByProfileId(profile.id);
+  },
 
-    return licences;
+  updateLicence: async (
+    userId,
+    licenceId,
+    licenceName,
+    issuingAuthority,
+    yearCompleted,
+  ) => {
+    const profile = await profileRepository.findByUserId(userId);
+
+    if (!profile) {
+      throw new Error("Profile not found for this user");
+    }
+
+    const licence = await licenceRepository.findById(licenceId);
+
+    if (!licence || licence.profile_id !== profile.id) {
+      throw new Error("Licence not found");
+    }
+
+    return await licenceRepository.updateLicence(
+      licenceId,
+      licenceName,
+      issuingAuthority,
+      yearCompleted,
+    );
+  },
+
+  deleteLicence: async (userId, licenceId) => {
+    const profile = await profileRepository.findByUserId(userId);
+
+    if (!profile) {
+      throw new Error("Profile not found for this user");
+    }
+
+    const licence = await licenceRepository.findById(licenceId);
+
+    if (!licence || licence.profile_id !== profile.id) {
+      throw new Error("Licence not found");
+    }
+
+    return await licenceRepository.deleteLicence(licenceId);
   },
 };
 

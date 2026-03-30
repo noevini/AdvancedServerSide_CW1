@@ -19,4 +19,23 @@ const router = express.Router();
 router.post("/", authMiddleware, certificationController.createCertification);
 router.get("/", authMiddleware, certificationController.getCertifications);
 
+/**
+ * @swagger
+ * /certifications/{id}:
+ *   put:
+ *     summary: Update a certification
+ *     security:
+ *       - bearerAuth: []
+ *   delete:
+ *     summary: Delete a certification
+ *     security:
+ *       - bearerAuth: []
+ */
+router.put("/:id", authMiddleware, certificationController.updateCertification);
+router.delete(
+  "/:id",
+  authMiddleware,
+  certificationController.deleteCertification,
+);
+
 module.exports = router;

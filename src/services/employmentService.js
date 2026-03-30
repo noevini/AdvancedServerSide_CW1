@@ -15,15 +15,13 @@ const employmentService = {
       throw new Error("Profile not found for this user");
     }
 
-    const employment = await employmentRepository.createEmployment(
+    return await employmentRepository.createEmployment(
       profile.id,
       companyName,
       jobTitle,
       startYear,
       endYear,
     );
-
-    return employment;
   },
 
   getEmploymentHistory: async (userId) => {
@@ -33,11 +31,52 @@ const employmentService = {
       throw new Error("Profile not found for this user");
     }
 
-    const employmentHistory = await employmentRepository.findByProfileId(
-      profile.id,
-    );
+    return await employmentRepository.findByProfileId(profile.id);
+  },
 
-    return employmentHistory;
+  updateEmployment: async (
+    userId,
+    employmentId,
+    companyName,
+    jobTitle,
+    startYear,
+    endYear,
+  ) => {
+    const profile = await profileRepository.findByUserId(userId);
+
+    if (!profile) {
+      throw new Error("Profile not found for this user");
+    }
+
+    const employment = await employmentRepository.findById(employmentId);
+
+    if (!employment || employment.profile_id !== profile.id) {
+      throw new Error("Employment record not found");
+    }
+
+    return await employmentRepository.updateEmployment(
+      employmentId,
+      companyName,
+      jobTitle,
+      startYear,
+      endYear,
+    );
+  },
+
+  deleteEmployment: async (userId, employmentId) => {
+    const profile = await profileRepository.findByUserId(userId);
+
+    if (!profile) {
+      throw new Error("Profile not found for this user");
+    }
+
+    const employment = await employmentRepository.findById(employmentId);
+
+    if (!employment || employment.profile_id !== profile.id) {
+      throw new Error("Employment record not found");
+    }
+
+    return await employmentRepository.deleteEmployment(employmentId);
   },
 };
 

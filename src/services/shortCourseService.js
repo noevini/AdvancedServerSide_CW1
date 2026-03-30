@@ -9,14 +9,12 @@ const shortCourseService = {
       throw new Error("Profile not found for this user");
     }
 
-    const shortCourse = await shortCourseRepository.createShortCourse(
+    return await shortCourseRepository.createShortCourse(
       profile.id,
       courseName,
       provider,
       yearCompleted,
     );
-
-    return shortCourse;
   },
 
   getShortCourses: async (userId) => {
@@ -26,11 +24,50 @@ const shortCourseService = {
       throw new Error("Profile not found for this user");
     }
 
-    const shortCourses = await shortCourseRepository.findByProfileId(
-      profile.id,
-    );
+    return await shortCourseRepository.findByProfileId(profile.id);
+  },
 
-    return shortCourses;
+  updateShortCourse: async (
+    userId,
+    shortCourseId,
+    courseName,
+    provider,
+    yearCompleted,
+  ) => {
+    const profile = await profileRepository.findByUserId(userId);
+
+    if (!profile) {
+      throw new Error("Profile not found for this user");
+    }
+
+    const shortCourse = await shortCourseRepository.findById(shortCourseId);
+
+    if (!shortCourse || shortCourse.profile_id !== profile.id) {
+      throw new Error("Short course not found");
+    }
+
+    return await shortCourseRepository.updateShortCourse(
+      shortCourseId,
+      courseName,
+      provider,
+      yearCompleted,
+    );
+  },
+
+  deleteShortCourse: async (userId, shortCourseId) => {
+    const profile = await profileRepository.findByUserId(userId);
+
+    if (!profile) {
+      throw new Error("Profile not found for this user");
+    }
+
+    const shortCourse = await shortCourseRepository.findById(shortCourseId);
+
+    if (!shortCourse || shortCourse.profile_id !== profile.id) {
+      throw new Error("Short course not found");
+    }
+
+    return await shortCourseRepository.deleteShortCourse(shortCourseId);
   },
 };
 

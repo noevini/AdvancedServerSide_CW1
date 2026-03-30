@@ -19,4 +19,19 @@ const router = express.Router();
 router.post("/", authMiddleware, licenceController.createLicence);
 router.get("/", authMiddleware, licenceController.getLicences);
 
+/**
+ * @swagger
+ * /licences/{id}:
+ *   put:
+ *     summary: Update a licence
+ *     security:
+ *       - bearerAuth: []
+ *   delete:
+ *     summary: Delete a licence
+ *     security:
+ *       - bearerAuth: []
+ */
+router.put("/:id", authMiddleware, licenceController.updateLicence);
+router.delete("/:id", authMiddleware, licenceController.deleteLicence);
+
 module.exports = router;

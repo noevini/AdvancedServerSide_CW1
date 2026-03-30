@@ -19,4 +19,19 @@ const router = express.Router();
 router.post("/", authMiddleware, shortCourseController.createShortCourse);
 router.get("/", authMiddleware, shortCourseController.getShortCourses);
 
+/**
+ * @swagger
+ * /short-courses/{id}:
+ *   put:
+ *     summary: Update a short course
+ *     security:
+ *       - bearerAuth: []
+ *   delete:
+ *     summary: Delete a short course
+ *     security:
+ *       - bearerAuth: []
+ */
+router.put("/:id", authMiddleware, shortCourseController.updateShortCourse);
+router.delete("/:id", authMiddleware, shortCourseController.deleteShortCourse);
+
 module.exports = router;

@@ -1,34 +1,14 @@
 const express = require("express");
 const authController = require("../controllers/authController");
 const authMiddleware = require("../middleware/authMiddleware");
-const router = express.Router();
 
-router.get("/me", authMiddleware, authController.me);
+const router = express.Router();
 
 /**
  * @swagger
  * /auth/register:
  *   post:
  *     summary: Register a new user
- *     description: Creates a new user account.
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               email:
- *                 type: string
- *                 example: test@test.com
- *               password:
- *                 type: string
- *                 example: 123456
- *     responses:
- *       201:
- *         description: User registered successfully
- *       400:
- *         description: Invalid input or email already registered
  */
 router.post("/register", authController.register);
 
@@ -37,26 +17,51 @@ router.post("/register", authController.register);
  * /auth/login:
  *   post:
  *     summary: Login user
- *     description: Authenticates a user and returns a JWT token.
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               email:
- *                 type: string
- *                 example: test@test.com
- *               password:
- *                 type: string
- *                 example: 123456
- *     responses:
- *       200:
- *         description: Login successful
- *       400:
- *         description: Invalid email or password
  */
 router.post("/login", authController.login);
+
+/**
+ * @swagger
+ * /auth/verify-email:
+ *   post:
+ *     summary: Verify user email
+ */
+router.post("/verify-email", authController.verifyEmail);
+
+/**
+ * @swagger
+ * /auth/request-password-reset:
+ *   post:
+ *     summary: Request password reset
+ */
+router.post("/request-password-reset", authController.requestPasswordReset);
+
+/**
+ * @swagger
+ * /auth/reset-password:
+ *   post:
+ *     summary: Reset password
+ */
+router.post("/reset-password", authController.resetPassword);
+
+/**
+ * @swagger
+ * /auth/logout:
+ *   post:
+ *     summary: Logout user
+ *     security:
+ *       - bearerAuth: []
+ */
+router.post("/logout", authMiddleware, authController.logout);
+
+/**
+ * @swagger
+ * /auth/me:
+ *   get:
+ *     summary: Get authenticated user
+ *     security:
+ *       - bearerAuth: []
+ */
+router.get("/me", authMiddleware, authController.me);
 
 module.exports = router;

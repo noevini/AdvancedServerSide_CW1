@@ -56,7 +56,7 @@ router.get("/featured", bidController.getFeaturedAlumnus);
  * @swagger
  * /bids/tomorrow-slot:
  *   get:
- *     summary: View tomorrow's slot
+ *     summary: View tomorrow's featured alumni slot
  */
 router.get("/tomorrow-slot", bidController.getTomorrowSlot);
 
@@ -64,7 +64,7 @@ router.get("/tomorrow-slot", bidController.getTomorrowSlot);
  * @swagger
  * /bids/monthly-limit:
  *   get:
- *     summary: View monthly limit status
+ *     summary: View monthly bidding limit status
  *     security:
  *       - bearerAuth: []
  */
@@ -78,7 +78,7 @@ router.get(
  * @swagger
  * /bids/reset-appearance-counts:
  *   post:
- *     summary: Reset all appearance counts
+ *     summary: Reset appearance count for all users
  *     security:
  *       - bearerAuth: []
  */
@@ -87,5 +87,13 @@ router.post(
   authMiddleware,
   bidController.resetAppearanceCounts,
 );
+
+/**
+ * @swagger
+ * /bids/active:
+ *   get:
+ *     summary: Get currently active alumnus (winning profile)
+ */
+router.get("/active", bidController.getActiveAlumnus);
 
 module.exports = router;

@@ -82,6 +82,16 @@ const bidService = {
     return highestBid;
   },
 
+  getActiveAlumnus: async () => {
+    const winner = await bidRepository.findCurrentWinner();
+
+    if (!winner) {
+      throw new Error("No active alumnus");
+    }
+
+    return winner;
+  },
+
   getTomorrowSlot: async () => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);

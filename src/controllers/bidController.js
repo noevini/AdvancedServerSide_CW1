@@ -77,6 +77,20 @@ const bidController = {
     }
   },
 
+  getActiveAlumnus: async (req, res) => {
+    try {
+      const alumnus = await bidService.getActiveAlumnus();
+
+      return res.status(200).json({
+        active_alumnus: alumnus,
+      });
+    } catch (error) {
+      return res.status(404).json({
+        error: error.message,
+      });
+    }
+  },
+
   getTomorrowSlot: async (req, res) => {
     try {
       const slot = await bidService.getTomorrowSlot();

@@ -177,6 +177,25 @@ const bidRepository = {
       });
     });
   },
+
+  findCurrentWinner: () => {
+    return new Promise((resolve, reject) => {
+      const sql = `
+      SELECT * FROM bids
+      WHERE status = 'WON'
+      ORDER BY created_at DESC
+      LIMIT 1
+    `;
+
+      db.get(sql, [], (err, row) => {
+        if (err) {
+          return reject(err);
+        }
+
+        resolve(row);
+      });
+    });
+  },
 };
 
 module.exports = bidRepository;

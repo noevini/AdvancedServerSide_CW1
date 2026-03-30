@@ -1,10 +1,16 @@
-const bidRepository = require("../repositories/BidRepository");
+const bidRepository = require("../repositories/bidRepository");
 const userRepository = require("../repositories/userRepository");
 
 const bidService = {
   createBid: async (userId, bidAmount) => {
-    if (!bidAmount || bidAmount <= 0) {
-      throw new Error("Invalid bid amount");
+    if (bidAmount === undefined || bidAmount === null || isNaN(bidAmount)) {
+      throw new Error("Bid amount must be a valid number");
+    }
+
+    const numericBidAmount = Number(bidAmount);
+
+    if (numericBidAmount <= 0) {
+      throw new Error("Bid amount must be greater than zero");
     }
 
     const yearMonth = new Date().toISOString().slice(0, 7);
@@ -18,13 +24,13 @@ const bidService = {
     const today = new Date().toISOString().split("T")[0];
 
     if (existingBid && existingBid.status !== "CANCELLED") {
-      if (bidAmount <= existingBid.bid_amount) {
+      if (numericBidAmount <= existingBid.bid_amount) {
         throw new Error("New bid must be higher than the current bid");
       }
 
       const updatedBid = await bidRepository.updateBidAmount(
         existingBid.id,
-        bidAmount,
+        numericBidAmount,
       );
 
       return {
@@ -33,8 +39,7 @@ const bidService = {
       };
     }
 
-    const bid = await bidRepository.createBid(userId, bidAmount, today);
-    return bid;
+    return await bidRepository.createBid(userId, numericBidAmount, today);
   },
 
   getMyBids: async (userId) => {
@@ -82,16 +87,6 @@ const bidService = {
     return highestBid;
   },
 
-  getActiveAlumnus: async () => {
-    const winner = await bidRepository.findCurrentWinner();
-
-    if (!winner) {
-      throw new Error("No active alumnus");
-    }
-
-    return winner;
-  },
-
   getTomorrowSlot: async () => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -119,6 +114,16 @@ const bidService = {
     return {
       message: "Appearance counts reset successfully",
     };
+  },
+
+  getActiveAlumnus: async () => {
+    const winner = await bidRepository.findCurrentWinner();
+
+    if (!winner) {
+      throw new Error("No active alumnus");
+    }
+
+    return winner;
   },
 };
 

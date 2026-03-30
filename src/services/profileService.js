@@ -23,6 +23,29 @@ const profileService = {
       throw new Error("Profile already exists for this user");
     }
 
+    if (!fullName || fullName.trim().length < 2) {
+      throw new Error("Full name is required");
+    }
+
+    if (linkedinUrl) {
+      if (
+        !linkedinUrl.startsWith("http://") &&
+        !linkedinUrl.startsWith("https://")
+      ) {
+        throw new Error("Invalid LinkedIn URL");
+      }
+
+      if (!linkedinUrl.toLowerCase().includes("linkedin.com")) {
+        throw new Error("Invalid LinkedIn URL");
+      }
+    }
+
+    if (imageUrl) {
+      if (!imageUrl.startsWith("http://") && !imageUrl.startsWith("https://")) {
+        throw new Error("Invalid image URL");
+      }
+    }
+
     const newProfile = await profileRepository.createProfile(
       userId,
       fullName,
@@ -41,7 +64,36 @@ const profileService = {
       throw new Error("Profile not found");
     }
 
+    if (!imageUrl.startsWith("http://") && !imageUrl.startsWith("https://")) {
+      throw new Error("Invalid image URL");
+    }
+
     const updated = await profileRepository.updateImageUrl(userId, imageUrl);
+    return updated;
+  },
+
+  updateLinkedinUrl: async (userId, linkedinUrl) => {
+    const profile = await profileRepository.findByUserId(userId);
+
+    if (!profile) {
+      throw new Error("Profile not found");
+    }
+
+    if (
+      !linkedinUrl.startsWith("http://") &&
+      !linkedinUrl.startsWith("https://")
+    ) {
+      throw new Error("Invalid LinkedIn URL");
+    }
+
+    if (!linkedinUrl.toLowerCase().includes("linkedin.com")) {
+      throw new Error("Invalid LinkedIn URL");
+    }
+
+    const updated = await profileRepository.updateLinkedinUrl(
+      userId,
+      linkedinUrl,
+    );
     return updated;
   },
 

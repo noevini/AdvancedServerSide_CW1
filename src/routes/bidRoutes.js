@@ -39,6 +39,7 @@ router.post("/cancel", authMiddleware, bidController.cancelMyBid);
  * /bids/select-winner:
  *   post:
  *     summary: Select the highest bid as winner
+ *     description: This endpoint is exposed for testing and demonstration. In production, winner selection can be automated using a scheduled job at the required time.
  *     security:
  *       - bearerAuth: []
  */

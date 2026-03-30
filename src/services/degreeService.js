@@ -9,14 +9,12 @@ const degreeService = {
       throw new Error("Profile not found for this user");
     }
 
-    const degree = await degreeRepository.createDegree(
+    return await degreeRepository.createDegree(
       profile.id,
       degreeName,
       institution,
       yearCompleted,
     );
-
-    return degree;
   },
 
   getDegrees: async (userId) => {
@@ -26,9 +24,50 @@ const degreeService = {
       throw new Error("Profile not found for this user");
     }
 
-    const degrees = await degreeRepository.findByProfileId(profile.id);
+    return await degreeRepository.findByProfileId(profile.id);
+  },
 
-    return degrees;
+  updateDegree: async (
+    userId,
+    degreeId,
+    degreeName,
+    institution,
+    yearCompleted,
+  ) => {
+    const profile = await profileRepository.findByUserId(userId);
+
+    if (!profile) {
+      throw new Error("Profile not found for this user");
+    }
+
+    const degree = await degreeRepository.findById(degreeId);
+
+    if (!degree || degree.profile_id !== profile.id) {
+      throw new Error("Degree not found");
+    }
+
+    return await degreeRepository.updateDegree(
+      degreeId,
+      degreeName,
+      institution,
+      yearCompleted,
+    );
+  },
+
+  deleteDegree: async (userId, degreeId) => {
+    const profile = await profileRepository.findByUserId(userId);
+
+    if (!profile) {
+      throw new Error("Profile not found for this user");
+    }
+
+    const degree = await degreeRepository.findById(degreeId);
+
+    if (!degree || degree.profile_id !== profile.id) {
+      throw new Error("Degree not found");
+    }
+
+    return await degreeRepository.deleteDegree(degreeId);
   },
 };
 

@@ -36,6 +36,16 @@ router.put("/image", authMiddleware, profileController.updateProfileImage);
 
 /**
  * @swagger
+ * /profile/linkedin:
+ *   put:
+ *     summary: Update LinkedIn URL
+ *     security:
+ *       - bearerAuth: []
+ */
+router.put("/linkedin", authMiddleware, profileController.updateLinkedinUrl);
+
+/**
+ * @swagger
  * /profile/completion-status:
  *   get:
  *     summary: Get profile completion status

@@ -4,7 +4,6 @@ const profileController = {
   getMyProfile: async (req, res) => {
     try {
       const userId = req.user.userId;
-
       const profile = await profileService.getMyProfile(userId);
 
       return res.status(200).json(profile);
@@ -18,7 +17,6 @@ const profileController = {
   createProfile: async (req, res) => {
     try {
       const userId = req.user.userId;
-
       const { full_name, biography, linkedin_url, image_url } = req.body;
 
       const profile = await profileService.createProfile(
@@ -67,10 +65,36 @@ const profileController = {
     }
   },
 
+  updateLinkedinUrl: async (req, res) => {
+    try {
+      const userId = req.user.userId;
+      const { linkedin_url } = req.body;
+
+      if (!linkedin_url) {
+        return res.status(400).json({
+          error: "LinkedIn URL is required",
+        });
+      }
+
+      const updated = await profileService.updateLinkedinUrl(
+        userId,
+        linkedin_url,
+      );
+
+      return res.status(200).json({
+        message: "LinkedIn URL updated successfully",
+        profile: updated,
+      });
+    } catch (error) {
+      return res.status(400).json({
+        error: error.message,
+      });
+    }
+  },
+
   getProfileCompletionStatus: async (req, res) => {
     try {
       const userId = req.user.userId;
-
       const status = await profileService.getProfileCompletionStatus(userId);
 
       return res.status(200).json(status);

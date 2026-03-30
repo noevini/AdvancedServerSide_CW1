@@ -34,7 +34,7 @@ const profileRepository = {
             id: this.lastID,
             user_id: userId,
             full_name: fullName,
-            biography: biography,
+            biography,
             linkedin_url: linkedinUrl,
             image_url: imageUrl,
           });
@@ -59,6 +59,27 @@ const profileRepository = {
         resolve({
           user_id: userId,
           image_url: imageUrl,
+        });
+      });
+    });
+  },
+
+  updateLinkedinUrl: (userId, linkedinUrl) => {
+    return new Promise((resolve, reject) => {
+      const sql = `
+        UPDATE profiles
+        SET linkedin_url = ?
+        WHERE user_id = ?
+      `;
+
+      db.run(sql, [linkedinUrl, userId], function (err) {
+        if (err) {
+          return reject(err);
+        }
+
+        resolve({
+          user_id: userId,
+          linkedin_url: linkedinUrl,
         });
       });
     });

@@ -25,6 +25,7 @@ router.post("/login", authController.login);
  * /auth/verify-email:
  *   post:
  *     summary: Verify user email
+ *     description: Verifies a registered user account using a generated verification token.
  */
 router.post("/verify-email", authController.verifyEmail);
 
@@ -33,6 +34,7 @@ router.post("/verify-email", authController.verifyEmail);
  * /auth/request-password-reset:
  *   post:
  *     summary: Request password reset
+ *     description: Generates a password reset token. In production, this token would be sent by email notification service.
  */
 router.post("/request-password-reset", authController.requestPasswordReset);
 
@@ -41,6 +43,7 @@ router.post("/request-password-reset", authController.requestPasswordReset);
  * /auth/reset-password:
  *   post:
  *     summary: Reset password
+ *     description: Resets the user password using a valid reset token.
  */
 router.post("/reset-password", authController.resetPassword);
 

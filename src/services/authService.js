@@ -4,10 +4,20 @@ const crypto = require("crypto");
 
 const userRepository = require("../repositories/userRepository");
 const emailVerificationTokenRepository = require("../repositories/emailVerificationTokenRepository");
-const passwordResetRepository = require("../repositories/passwordResetRepository");
+const passwordResetTokenRepository = require("../repositories/passwordresetrepository");
 
 const authService = {
   registerUser: async (email, password) => {
+    const universityDomain = "@westminster.ac.uk";
+
+    if (!email || !email.endsWith(universityDomain)) {
+      throw new Error("A valid university email is required");
+    }
+
+    if (!password || password.length < 8) {
+      throw new Error("Password must be at least 8 characters long");
+    }
+
     const existingUser = await userRepository.findByEmail(email);
 
     if (existingUser) {
@@ -34,6 +44,10 @@ const authService = {
   },
 
   loginUser: async (email, password) => {
+    if (!email || !password) {
+      throw new Error("Email and password are required");
+    }
+
     const user = await userRepository.findByEmail(email);
 
     if (!user) {
@@ -125,6 +139,10 @@ const authService = {
 
     if (new Date(storedToken.expires_at) < new Date()) {
       throw new Error("Reset token has expired");
+    }
+
+    if (!newPassword || newPassword.length < 8) {
+      throw new Error("Password must be at least 8 characters long");
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);

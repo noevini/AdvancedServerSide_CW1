@@ -6,6 +6,22 @@ const userRepository = require("../repositories/userRepository");
 const emailVerificationTokenRepository = require("../repositories/emailVerificationTokenRepository");
 const passwordResetTokenRepository = require("../repositories/passwordresetrepository");
 
+// Validates password strength — min 8 chars, uppercase, number, special character
+const validatePassword = (password) => {
+  if (!password || password.length < 8) {
+    throw new Error("Password must be at least 8 characters long");
+  }
+  if (!/[A-Z]/.test(password)) {
+    throw new Error("Password must contain at least one uppercase letter");
+  }
+  if (!/[0-9]/.test(password)) {
+    throw new Error("Password must contain at least one number");
+  }
+  if (!/[^A-Za-z0-9]/.test(password)) {
+    throw new Error("Password must contain at least one special character");
+  }
+};
+
 const authService = {
   registerUser: async (email, password) => {
     const universityDomain = "@westminster.ac.uk";
@@ -14,9 +30,8 @@ const authService = {
       throw new Error("A valid university email is required");
     }
 
-    if (!password || password.length < 8) {
-      throw new Error("Password must be at least 8 characters long");
-    }
+    // Validate password complexity before hashing
+    validatePassword(password);
 
     const existingUser = await userRepository.findByEmail(email);
 
@@ -24,10 +39,12 @@ const authService = {
       throw new Error("Email already registered");
     }
 
+    // Hash password with bcrypt using 10 salt rounds
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await userRepository.createUser(email, hashedPassword);
 
+    // Generate a cryptographically secure single-use verification token
     const verificationToken = crypto.randomBytes(32).toString("hex");
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
 
@@ -50,6 +67,7 @@ const authService = {
 
     const user = await userRepository.findByEmail(email);
 
+    // Return same error for both cases to prevent user enumeration attacks
     if (!user) {
       throw new Error("Invalid email or password");
     }
@@ -60,10 +78,12 @@ const authService = {
       throw new Error("Invalid email or password");
     }
 
+    // Prevent login if email has not been verified
     if (!user.is_verified) {
       throw new Error("Email not verified");
     }
 
+    // Sign JWT with user ID and email — expires in 1 hour
     const token = jwt.sign(
       { userId: user.id, email: user.email },
       process.env.JWT_SECRET,
@@ -88,6 +108,7 @@ const authService = {
       throw new Error("Invalid verification token");
     }
 
+    // Prevent token reuse
     if (storedToken.is_used) {
       throw new Error("Verification token already used");
     }
@@ -97,6 +118,8 @@ const authService = {
     }
 
     await userRepository.markEmailAsVerified(storedToken.user_id);
+
+    // Mark token as used so it cannot be used again
     await emailVerificationTokenRepository.markAsUsed(storedToken.id);
 
     return {
@@ -111,6 +134,7 @@ const authService = {
       throw new Error("User not found");
     }
 
+    // Generate a cryptographically secure single-use reset token
     const resetToken = crypto.randomBytes(32).toString("hex");
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
 
@@ -133,6 +157,7 @@ const authService = {
       throw new Error("Invalid reset token");
     }
 
+    // Prevent token reuse
     if (storedToken.is_used) {
       throw new Error("Reset token already used");
     }
@@ -141,13 +166,14 @@ const authService = {
       throw new Error("Reset token has expired");
     }
 
-    if (!newPassword || newPassword.length < 8) {
-      throw new Error("Password must be at least 8 characters long");
-    }
+    // Validate new password complexity before hashing
+    validatePassword(newPassword);
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     await userRepository.updatePassword(storedToken.user_id, hashedPassword);
+
+    // Mark token as used so it cannot be used again
     await passwordResetTokenRepository.markAsUsed(storedToken.id);
 
     return {

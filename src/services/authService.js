@@ -4,7 +4,7 @@ const crypto = require("crypto");
 
 const userRepository = require("../repositories/userRepository");
 const emailVerificationTokenRepository = require("../repositories/emailVerificationTokenRepository");
-const passwordResetTokenRepository = require("../repositories/passwordResetTokenRepository");
+const passwordResetRepository = require("../repositories/passwordResetRepository");
 
 const authService = {
   registerUser: async (email, password) => {

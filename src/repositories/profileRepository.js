@@ -42,6 +42,27 @@ const profileRepository = {
       );
     });
   },
+
+  updateImageUrl: (userId, imageUrl) => {
+    return new Promise((resolve, reject) => {
+      const sql = `
+        UPDATE profiles
+        SET image_url = ?
+        WHERE user_id = ?
+      `;
+
+      db.run(sql, [imageUrl, userId], function (err) {
+        if (err) {
+          return reject(err);
+        }
+
+        resolve({
+          user_id: userId,
+          image_url: imageUrl,
+        });
+      });
+    });
+  },
 };
 
 module.exports = profileRepository;

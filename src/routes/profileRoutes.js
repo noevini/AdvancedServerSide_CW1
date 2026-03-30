@@ -9,6 +9,7 @@ const router = express.Router();
  * /profile/me:
  *   get:
  *     summary: Get authenticated user's profile
+ *     tags: [Profile]
  *     security:
  *       - bearerAuth: []
  */
@@ -19,6 +20,7 @@ router.get("/me", authMiddleware, profileController.getMyProfile);
  * /profile:
  *   post:
  *     summary: Create profile for authenticated user
+ *     tags: [Profile]
  *     security:
  *       - bearerAuth: []
  */
@@ -28,7 +30,8 @@ router.post("/", authMiddleware, profileController.createProfile);
  * @swagger
  * /profile/image:
  *   put:
- *     summary: Update profile image
+ *     summary: Update profile image URL
+ *     tags: [Profile]
  *     security:
  *       - bearerAuth: []
  */
@@ -39,6 +42,7 @@ router.put("/image", authMiddleware, profileController.updateProfileImage);
  * /profile/linkedin:
  *   put:
  *     summary: Update LinkedIn URL
+ *     tags: [Profile]
  *     security:
  *       - bearerAuth: []
  */
@@ -49,6 +53,7 @@ router.put("/linkedin", authMiddleware, profileController.updateLinkedinUrl);
  * /profile/completion-status:
  *   get:
  *     summary: Get profile completion status
+ *     tags: [Profile]
  *     security:
  *       - bearerAuth: []
  */

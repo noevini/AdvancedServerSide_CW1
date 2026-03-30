@@ -8,11 +8,13 @@ const router = express.Router();
  * @swagger
  * /employment-history:
  *   post:
- *     summary: Create an employment record for the authenticated user
+ *     summary: Create an employment record
+ *     tags: [Employment]
  *     security:
  *       - bearerAuth: []
  *   get:
- *     summary: Get employment history for the authenticated user
+ *     summary: Get all employment history
+ *     tags: [Employment]
  *     security:
  *       - bearerAuth: []
  */
@@ -24,12 +26,26 @@ router.get("/", authMiddleware, employmentController.getEmploymentHistory);
  * /employment-history/{id}:
  *   put:
  *     summary: Update an employment record
+ *     tags: [Employment]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
  *   delete:
  *     summary: Delete an employment record
+ *     tags: [Employment]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
  */
 router.put("/:id", authMiddleware, employmentController.updateEmployment);
 router.delete("/:id", authMiddleware, employmentController.deleteEmployment);

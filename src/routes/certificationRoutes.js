@@ -8,11 +8,13 @@ const router = express.Router();
  * @swagger
  * /certifications:
  *   post:
- *     summary: Create a certification for the authenticated user
+ *     summary: Create a certification
+ *     tags: [Certifications]
  *     security:
  *       - bearerAuth: []
  *   get:
- *     summary: Get all certifications for the authenticated user
+ *     summary: Get all certifications
+ *     tags: [Certifications]
  *     security:
  *       - bearerAuth: []
  */
@@ -24,12 +26,26 @@ router.get("/", authMiddleware, certificationController.getCertifications);
  * /certifications/{id}:
  *   put:
  *     summary: Update a certification
+ *     tags: [Certifications]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
  *   delete:
  *     summary: Delete a certification
+ *     tags: [Certifications]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
  */
 router.put("/:id", authMiddleware, certificationController.updateCertification);
 router.delete(

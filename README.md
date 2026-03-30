@@ -1,34 +1,73 @@
-# AdvancedServerSide_CW1
 # Alumni Influencers API
 
-A RESTful API built with Node.js and Express for managing alumni influencers.
+RESTful API built with Node.js and Express for the Phantasmagoria Ltd alumni engagement platform.
 
 ## Tech Stack
-- Node.js
-- Express
-- MySql
-- Swagger (OpenAPI)
 
-## Setup Instructions
+- Node.js + Express 5
+- SQLite 3 (tables created automatically on startup)
+- JWT + bcrypt for authentication
+- Helmet, CORS, express-rate-limit, express-validator for security
+- node-cron for automated winner selection
+- Swagger/OpenAPI 3.0 for documentation
 
-1. Clone the repository
-2. Install dependencies:
+## Setup
+
+1. Install dependencies:
+
+```bash
    npm install
-3. Create a `.env` file based on `.env.example`
-4. Run the project:
-   npm run dev
+```
 
-## API Documentation
+2. Configure environment:
 
-Swagger documentation will be available at:
-http://localhost:3000/api-docs
+```bash
+   cp .env.example .env
+```
+
+Edit `.env` — at minimum set `JWT_SECRET` to a long random string.
+For emails, use [Mailtrap](https://mailtrap.io) in development.
+
+3. Run:
+
+```bash
+   npm run dev   # development
+   npm start     # production
+```
+
+The `database.sqlite` file is created automatically — no migrations needed.
+
+4. API docs: http://localhost:3000/api-docs
 
 ## Project Structure
 
-This project follows a layered architecture:
-- controllers/
-- services/
-- repositories/
-- routes/
-- middleware/
-- config/
+```
+src/
+├── app.js
+├── server.js
+├── config/
+│   ├── database.js     # SQLite connection
+│   └── initDb.js       # Creates all tables on startup
+├── controllers/
+├── services/
+├── repositories/
+├── routes/
+├── middleware/
+├── jobs/
+│   └── winnerSelectionJob.js
+└── swagger/
+```
+
+## Database Schema
+
+```
+users ──< profiles ──< degrees
+                  ──< certifications
+                  ──< licences
+                  ──< short_courses
+                  ──< employment_history
+users ──< bids
+users ──< email_verification_tokens
+users ──< password_reset_tokens
+api_tokens ──< api_usage_logs
+```

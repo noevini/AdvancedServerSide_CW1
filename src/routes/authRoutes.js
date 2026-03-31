@@ -1,7 +1,6 @@
 const express = require("express");
 const authController = require("../controllers/authController");
 const authMiddleware = require("../middleware/authMiddleware");
-const { authLimiter } = require("../middleware/rateLimitMiddleware");
 
 const router = express.Router();
 
@@ -12,7 +11,7 @@ const router = express.Router();
  *     summary: Register a new alumni user
  *     tags: [Auth]
  */
-router.post("/register", authLimiter, authController.register);
+router.post("/register", authController.register);
 
 /**
  * @swagger
@@ -21,7 +20,7 @@ router.post("/register", authLimiter, authController.register);
  *     summary: Login and receive a JWT token
  *     tags: [Auth]
  */
-router.post("/login", authLimiter, authController.login);
+router.post("/login", authController.login);
 
 /**
  * @swagger
@@ -39,11 +38,7 @@ router.post("/verify-email", authController.verifyEmail);
  *     summary: Request a password reset token
  *     tags: [Auth]
  */
-router.post(
-  "/request-password-reset",
-  authLimiter,
-  authController.requestPasswordReset,
-);
+router.post("/request-password-reset", authController.requestPasswordReset);
 
 /**
  * @swagger
@@ -52,7 +47,7 @@ router.post(
  *     summary: Reset password using token
  *     tags: [Auth]
  */
-router.post("/reset-password", authLimiter, authController.resetPassword);
+router.post("/reset-password", authController.resetPassword);
 
 /**
  * @swagger

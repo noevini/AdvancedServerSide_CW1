@@ -1,5 +1,5 @@
-const bidRepository = require("../repositories/bidRepository");
-const userRepository = require("../repositories/userRepository");
+const bidDAO = require("../dao/bidDAO");
+const userDAO = require("../dao/userDAO");
 
 const bidService = {
   // Creates a new bid or updates an existing one (increase only)
@@ -17,14 +17,14 @@ const bidService = {
 
     // Check how many times this user has won this month
     const yearMonth = new Date().toISOString().slice(0, 7);
-    const monthlyWins = await bidRepository.countMonthlyWins(userId, yearMonth);
+    const monthlyWins = await bidDAO.countMonthlyWins(userId, yearMonth);
 
     if (monthlyWins >= 3) {
       throw new Error("Monthly bidding win limit reached");
     }
 
     // If the user already has an active bid, update it instead of creating a new one
-    const existingBid = await bidRepository.findLatestByUserId(userId);
+    const existingBid = await bidDAO.findLatestByUserId(userId);
     const today = new Date().toISOString().split("T")[0];
 
     if (existingBid && existingBid.status !== "CANCELLED") {
@@ -33,29 +33,26 @@ const bidService = {
         throw new Error("New bid must be higher than the current bid");
       }
 
-      const updatedBid = await bidRepository.updateBidAmount(
+      const updatedBid = await bidDAO.updateBidAmount(
         existingBid.id,
         numericBidAmount,
       );
 
-      return {
-        ...existingBid,
-        bid_amount: updatedBid.bid_amount,
-      };
+      return { ...existingBid, bid_amount: updatedBid.bid_amount };
     }
 
     // No active bid exists — create a new one
-    return await bidRepository.createBid(userId, numericBidAmount, today);
+    return await bidDAO.createBid(userId, numericBidAmount, today);
   },
 
   // Returns all bids placed by the authenticated user
   getMyBids: async (userId) => {
-    return await bidRepository.findByUserId(userId);
+    return await bidDAO.findByUserId(userId);
   },
 
   // Cancels the user's latest active bid
   cancelMyBid: async (userId) => {
-    const latestBid = await bidRepository.findLatestByUserId(userId);
+    const latestBid = await bidDAO.findLatestByUserId(userId);
 
     if (!latestBid) {
       throw new Error("No bid found");
@@ -65,34 +62,31 @@ const bidService = {
       throw new Error("Bid already cancelled");
     }
 
-    return await bidRepository.cancelBid(latestBid.id);
+    return await bidDAO.cancelBid(latestBid.id);
   },
 
   // Selects the winner of the day — called automatically at midnight
   // Marks all other bids as LOST and the highest bid as WON
   selectWinner: async () => {
-    const highestBid = await bidRepository.findHighestBid();
+    const highestBid = await bidDAO.findHighestBid();
 
     if (!highestBid) {
       throw new Error("No bids available");
     }
 
     // Mark all active bids as lost first, then set the winner
-    await bidRepository.markAllAsLost();
-    await bidRepository.markAsWinner(highestBid.id);
+    await bidDAO.markAllAsLost();
+    await bidDAO.markAsWinner(highestBid.id);
 
     // Track how many times this alumni has been featured
-    await userRepository.incrementAppearanceCount(highestBid.user_id);
+    await userDAO.incrementAppearanceCount(highestBid.user_id);
 
-    return {
-      ...highestBid,
-      status: "WON",
-    };
+    return { ...highestBid, status: "WON" };
   },
 
   // Returns the current highest bid — used before winner is selected
   getFeaturedAlumnus: async () => {
-    const highestBid = await bidRepository.findHighestBid();
+    const highestBid = await bidDAO.findHighestBid();
 
     if (!highestBid) {
       throw new Error("No featured alumnus available");
@@ -115,7 +109,7 @@ const bidService = {
   // Returns how many wins the user has used this month and how many remain
   getMonthlyLimitStatus: async (userId) => {
     const yearMonth = new Date().toISOString().slice(0, 7);
-    const usedWins = await bidRepository.countMonthlyWins(userId, yearMonth);
+    const usedWins = await bidDAO.countMonthlyWins(userId, yearMonth);
 
     return {
       monthly_limit: 3,
@@ -126,16 +120,13 @@ const bidService = {
 
   // Resets the appearance count for all users — called at the start of each month
   resetAppearanceCounts: async () => {
-    await userRepository.resetAppearanceCounts();
-
-    return {
-      message: "Appearance counts reset successfully",
-    };
+    await userDAO.resetAppearanceCounts();
+    return { message: "Appearance counts reset successfully" };
   },
 
   // Returns the currently active featured alumnus (today's winner)
   getActiveAlumnus: async () => {
-    const winner = await bidRepository.findCurrentWinner();
+    const winner = await bidDAO.findCurrentWinner();
 
     if (!winner) {
       throw new Error("No active alumnus");

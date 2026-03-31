@@ -1,5 +1,5 @@
-const employmentRepository = require("../repositories/employmentRepository");
-const profileRepository = require("../repositories/profileRepository");
+const employmentDAO = require("../dao/employmentDAO");
+const profileDAO = require("../dao/profileDAO");
 
 const employmentService = {
   createEmployment: async (
@@ -9,13 +9,13 @@ const employmentService = {
     startYear,
     endYear,
   ) => {
-    const profile = await profileRepository.findByUserId(userId);
+    const profile = await profileDAO.findByUserId(userId);
 
     if (!profile) {
       throw new Error("Profile not found for this user");
     }
 
-    return await employmentRepository.createEmployment(
+    return await employmentDAO.createEmployment(
       profile.id,
       companyName,
       jobTitle,
@@ -25,13 +25,13 @@ const employmentService = {
   },
 
   getEmploymentHistory: async (userId) => {
-    const profile = await profileRepository.findByUserId(userId);
+    const profile = await profileDAO.findByUserId(userId);
 
     if (!profile) {
       throw new Error("Profile not found for this user");
     }
 
-    return await employmentRepository.findByProfileId(profile.id);
+    return await employmentDAO.findByProfileId(profile.id);
   },
 
   updateEmployment: async (
@@ -42,19 +42,19 @@ const employmentService = {
     startYear,
     endYear,
   ) => {
-    const profile = await profileRepository.findByUserId(userId);
+    const profile = await profileDAO.findByUserId(userId);
 
     if (!profile) {
       throw new Error("Profile not found for this user");
     }
 
-    const employment = await employmentRepository.findById(employmentId);
+    const employment = await employmentDAO.findById(employmentId);
 
     if (!employment || employment.profile_id !== profile.id) {
       throw new Error("Employment record not found");
     }
 
-    return await employmentRepository.updateEmployment(
+    return await employmentDAO.updateEmployment(
       employmentId,
       companyName,
       jobTitle,
@@ -64,19 +64,19 @@ const employmentService = {
   },
 
   deleteEmployment: async (userId, employmentId) => {
-    const profile = await profileRepository.findByUserId(userId);
+    const profile = await profileDAO.findByUserId(userId);
 
     if (!profile) {
       throw new Error("Profile not found for this user");
     }
 
-    const employment = await employmentRepository.findById(employmentId);
+    const employment = await employmentDAO.findById(employmentId);
 
     if (!employment || employment.profile_id !== profile.id) {
       throw new Error("Employment record not found");
     }
 
-    return await employmentRepository.deleteEmployment(employmentId);
+    return await employmentDAO.deleteEmployment(employmentId);
   },
 };
 

@@ -1,5 +1,5 @@
-const licenceRepository = require("../repositories/licenceRepository");
-const profileRepository = require("../repositories/profileRepository");
+const licenceDAO = require("../dao/licenceDAO");
+const profileDAO = require("../dao/profileDAO");
 
 const licenceService = {
   createLicence: async (
@@ -8,13 +8,13 @@ const licenceService = {
     issuingAuthority,
     yearCompleted,
   ) => {
-    const profile = await profileRepository.findByUserId(userId);
+    const profile = await profileDAO.findByUserId(userId);
 
     if (!profile) {
       throw new Error("Profile not found for this user");
     }
 
-    return await licenceRepository.createLicence(
+    return await licenceDAO.createLicence(
       profile.id,
       licenceName,
       issuingAuthority,
@@ -23,13 +23,13 @@ const licenceService = {
   },
 
   getLicences: async (userId) => {
-    const profile = await profileRepository.findByUserId(userId);
+    const profile = await profileDAO.findByUserId(userId);
 
     if (!profile) {
       throw new Error("Profile not found for this user");
     }
 
-    return await licenceRepository.findByProfileId(profile.id);
+    return await licenceDAO.findByProfileId(profile.id);
   },
 
   updateLicence: async (
@@ -39,19 +39,19 @@ const licenceService = {
     issuingAuthority,
     yearCompleted,
   ) => {
-    const profile = await profileRepository.findByUserId(userId);
+    const profile = await profileDAO.findByUserId(userId);
 
     if (!profile) {
       throw new Error("Profile not found for this user");
     }
 
-    const licence = await licenceRepository.findById(licenceId);
+    const licence = await licenceDAO.findById(licenceId);
 
     if (!licence || licence.profile_id !== profile.id) {
       throw new Error("Licence not found");
     }
 
-    return await licenceRepository.updateLicence(
+    return await licenceDAO.updateLicence(
       licenceId,
       licenceName,
       issuingAuthority,
@@ -60,19 +60,19 @@ const licenceService = {
   },
 
   deleteLicence: async (userId, licenceId) => {
-    const profile = await profileRepository.findByUserId(userId);
+    const profile = await profileDAO.findByUserId(userId);
 
     if (!profile) {
       throw new Error("Profile not found for this user");
     }
 
-    const licence = await licenceRepository.findById(licenceId);
+    const licence = await licenceDAO.findById(licenceId);
 
     if (!licence || licence.profile_id !== profile.id) {
       throw new Error("Licence not found");
     }
 
-    return await licenceRepository.deleteLicence(licenceId);
+    return await licenceDAO.deleteLicence(licenceId);
   },
 };
 

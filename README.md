@@ -4,12 +4,11 @@ RESTful API built with Node.js and Express for the Phantasmagoria Ltd alumni eng
 
 ## Tech Stack
 
-- Node.js + Express 5
-- SQLite 3 (tables created automatically on startup)
-- JWT + bcrypt for authentication
-- Helmet, CORS, express-rate-limit, express-validator for security
-- node-cron for automated winner selection
-- Swagger/OpenAPI 3.0 for documentation
+- Node.js + Express
+- SQLite 3
+- JWT + bcrypt
+- Helmet, CORS, CSRF, cookie-parser
+- Swagger/OpenAPI 3.0
 
 ## Setup
 
@@ -25,17 +24,14 @@ RESTful API built with Node.js and Express for the Phantasmagoria Ltd alumni eng
    cp .env.example .env
 ```
 
-Edit `.env` — at minimum set `JWT_SECRET` to a long random string.
-For emails, use [Mailtrap](https://mailtrap.io) in development.
+Edit `.env` and set `JWT_SECRET` to a long random string.
 
 3. Run:
 
 ```bash
-   npm run dev   # development
-   npm start     # production
+   npm run dev
+   npm start
 ```
-
-The `database.sqlite` file is created automatically — no migrations needed.
 
 4. API docs: http://localhost:3000/api-docs
 
@@ -46,28 +42,28 @@ src/
 ├── app.js
 ├── server.js
 ├── config/
-│   ├── database.js     # SQLite connection
-│   └── initDb.js       # Creates all tables on startup
+│   ├── database.js
+│   ├── initDb.js
+│   └── csrf.js
 ├── controllers/
 ├── services/
-├── repositories/
+├── dao/
 ├── routes/
 ├── middleware/
-├── jobs/
-│   └── winnerSelectionJob.js
 └── swagger/
 ```
 
-## Database Schema
+## Database Tables
 
-```
-users ──< profiles ──< degrees
-                  ──< certifications
-                  ──< licences
-                  ──< short_courses
-                  ──< employment_history
-users ──< bids
-users ──< email_verification_tokens
-users ──< password_reset_tokens
-api_tokens ──< api_usage_logs
-```
+- users
+- profiles (belongs to user)
+- degrees (belongs to profile)
+- certifications (belongs to profile)
+- licences (belongs to profile)
+- short_courses (belongs to profile)
+- employment_history (belongs to profile)
+- bids (belongs to user)
+- email_verification_tokens (belongs to user)
+- password_reset_tokens (belongs to user)
+- api_tokens
+- api_usage_logs (belongs to api_token)

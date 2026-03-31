@@ -1,13 +1,13 @@
-const profileRepository = require("../repositories/profileRepository");
-const degreeRepository = require("../repositories/degreeRepository");
-const certificationRepository = require("../repositories/certificationRepository");
-const licenceRepository = require("../repositories/licenceRepository");
-const shortCourseRepository = require("../repositories/shortCourseRepository");
-const employmentRepository = require("../repositories/employmentRepository");
+const profileDAO = require("../dao/profileDAO");
+const degreeDAO = require("../dao/degreeDAO");
+const certificationDAO = require("../dao/certificationDAO");
+const licenceDAO = require("../dao/licenceDAO");
+const shortCourseDAO = require("../dao/shortCourseDAO");
+const employmentDAO = require("../dao/employmentDAO");
 
 const profileService = {
   getMyProfile: async (userId) => {
-    const profile = await profileRepository.findByUserId(userId);
+    const profile = await profileDAO.findByUserId(userId);
 
     if (!profile) {
       throw new Error("Profile not found");
@@ -17,7 +17,7 @@ const profileService = {
   },
 
   createProfile: async (userId, fullName, biography, linkedinUrl, imageUrl) => {
-    const existingProfile = await profileRepository.findByUserId(userId);
+    const existingProfile = await profileDAO.findByUserId(userId);
 
     if (existingProfile) {
       throw new Error("Profile already exists for this user");
@@ -34,7 +34,6 @@ const profileService = {
       ) {
         throw new Error("Invalid LinkedIn URL");
       }
-
       if (!linkedinUrl.toLowerCase().includes("linkedin.com")) {
         throw new Error("Invalid LinkedIn URL");
       }
@@ -46,19 +45,17 @@ const profileService = {
       }
     }
 
-    const newProfile = await profileRepository.createProfile(
+    return await profileDAO.createProfile(
       userId,
       fullName,
       biography,
       linkedinUrl,
       imageUrl,
     );
-
-    return newProfile;
   },
 
   updateProfileImage: async (userId, imageUrl) => {
-    const profile = await profileRepository.findByUserId(userId);
+    const profile = await profileDAO.findByUserId(userId);
 
     if (!profile) {
       throw new Error("Profile not found");
@@ -68,12 +65,11 @@ const profileService = {
       throw new Error("Invalid image URL");
     }
 
-    const updated = await profileRepository.updateImageUrl(userId, imageUrl);
-    return updated;
+    return await profileDAO.updateImageUrl(userId, imageUrl);
   },
 
   updateLinkedinUrl: async (userId, linkedinUrl) => {
-    const profile = await profileRepository.findByUserId(userId);
+    const profile = await profileDAO.findByUserId(userId);
 
     if (!profile) {
       throw new Error("Profile not found");
@@ -90,31 +86,21 @@ const profileService = {
       throw new Error("Invalid LinkedIn URL");
     }
 
-    const updated = await profileRepository.updateLinkedinUrl(
-      userId,
-      linkedinUrl,
-    );
-    return updated;
+    return await profileDAO.updateLinkedinUrl(userId, linkedinUrl);
   },
 
   getProfileCompletionStatus: async (userId) => {
-    const profile = await profileRepository.findByUserId(userId);
+    const profile = await profileDAO.findByUserId(userId);
 
     if (!profile) {
       throw new Error("Profile not found");
     }
 
-    const degrees = await degreeRepository.findByProfileId(profile.id);
-    const certifications = await certificationRepository.findByProfileId(
-      profile.id,
-    );
-    const licences = await licenceRepository.findByProfileId(profile.id);
-    const shortCourses = await shortCourseRepository.findByProfileId(
-      profile.id,
-    );
-    const employmentHistory = await employmentRepository.findByProfileId(
-      profile.id,
-    );
+    const degrees = await degreeDAO.findByProfileId(profile.id);
+    const certifications = await certificationDAO.findByProfileId(profile.id);
+    const licences = await licenceDAO.findByProfileId(profile.id);
+    const shortCourses = await shortCourseDAO.findByProfileId(profile.id);
+    const employmentHistory = await employmentDAO.findByProfileId(profile.id);
 
     let completedFields = 0;
     const totalFields = 8;

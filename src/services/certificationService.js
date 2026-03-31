@@ -1,5 +1,5 @@
-const certificationRepository = require("../repositories/certificationRepository");
-const profileRepository = require("../repositories/profileRepository");
+const certificationDAO = require("../dao/certificationDAO");
+const profileDAO = require("../dao/profileDAO");
 
 const certificationService = {
   createCertification: async (
@@ -8,13 +8,13 @@ const certificationService = {
     provider,
     yearCompleted,
   ) => {
-    const profile = await profileRepository.findByUserId(userId);
+    const profile = await profileDAO.findByUserId(userId);
 
     if (!profile) {
       throw new Error("Profile not found for this user");
     }
 
-    return await certificationRepository.createCertification(
+    return await certificationDAO.createCertification(
       profile.id,
       certificationName,
       provider,
@@ -23,13 +23,13 @@ const certificationService = {
   },
 
   getCertifications: async (userId) => {
-    const profile = await profileRepository.findByUserId(userId);
+    const profile = await profileDAO.findByUserId(userId);
 
     if (!profile) {
       throw new Error("Profile not found for this user");
     }
 
-    return await certificationRepository.findByProfileId(profile.id);
+    return await certificationDAO.findByProfileId(profile.id);
   },
 
   updateCertification: async (
@@ -39,20 +39,19 @@ const certificationService = {
     provider,
     yearCompleted,
   ) => {
-    const profile = await profileRepository.findByUserId(userId);
+    const profile = await profileDAO.findByUserId(userId);
 
     if (!profile) {
       throw new Error("Profile not found for this user");
     }
 
-    const certification =
-      await certificationRepository.findById(certificationId);
+    const certification = await certificationDAO.findById(certificationId);
 
     if (!certification || certification.profile_id !== profile.id) {
       throw new Error("Certification not found");
     }
 
-    return await certificationRepository.updateCertification(
+    return await certificationDAO.updateCertification(
       certificationId,
       certificationName,
       provider,
@@ -61,20 +60,19 @@ const certificationService = {
   },
 
   deleteCertification: async (userId, certificationId) => {
-    const profile = await profileRepository.findByUserId(userId);
+    const profile = await profileDAO.findByUserId(userId);
 
     if (!profile) {
       throw new Error("Profile not found for this user");
     }
 
-    const certification =
-      await certificationRepository.findById(certificationId);
+    const certification = await certificationDAO.findById(certificationId);
 
     if (!certification || certification.profile_id !== profile.id) {
       throw new Error("Certification not found");
     }
 
-    return await certificationRepository.deleteCertification(certificationId);
+    return await certificationDAO.deleteCertification(certificationId);
   },
 };
 

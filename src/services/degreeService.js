@@ -1,15 +1,15 @@
-const degreeRepository = require("../repositories/degreeRepository");
-const profileRepository = require("../repositories/profileRepository");
+const degreeDAO = require("../dao/degreeDAO");
+const profileDAO = require("../dao/profileDAO");
 
 const degreeService = {
   createDegree: async (userId, degreeName, institution, yearCompleted) => {
-    const profile = await profileRepository.findByUserId(userId);
+    const profile = await profileDAO.findByUserId(userId);
 
     if (!profile) {
       throw new Error("Profile not found for this user");
     }
 
-    return await degreeRepository.createDegree(
+    return await degreeDAO.createDegree(
       profile.id,
       degreeName,
       institution,
@@ -18,13 +18,13 @@ const degreeService = {
   },
 
   getDegrees: async (userId) => {
-    const profile = await profileRepository.findByUserId(userId);
+    const profile = await profileDAO.findByUserId(userId);
 
     if (!profile) {
       throw new Error("Profile not found for this user");
     }
 
-    return await degreeRepository.findByProfileId(profile.id);
+    return await degreeDAO.findByProfileId(profile.id);
   },
 
   updateDegree: async (
@@ -34,19 +34,19 @@ const degreeService = {
     institution,
     yearCompleted,
   ) => {
-    const profile = await profileRepository.findByUserId(userId);
+    const profile = await profileDAO.findByUserId(userId);
 
     if (!profile) {
       throw new Error("Profile not found for this user");
     }
 
-    const degree = await degreeRepository.findById(degreeId);
+    const degree = await degreeDAO.findById(degreeId);
 
     if (!degree || degree.profile_id !== profile.id) {
       throw new Error("Degree not found");
     }
 
-    return await degreeRepository.updateDegree(
+    return await degreeDAO.updateDegree(
       degreeId,
       degreeName,
       institution,
@@ -55,19 +55,19 @@ const degreeService = {
   },
 
   deleteDegree: async (userId, degreeId) => {
-    const profile = await profileRepository.findByUserId(userId);
+    const profile = await profileDAO.findByUserId(userId);
 
     if (!profile) {
       throw new Error("Profile not found for this user");
     }
 
-    const degree = await degreeRepository.findById(degreeId);
+    const degree = await degreeDAO.findById(degreeId);
 
     if (!degree || degree.profile_id !== profile.id) {
       throw new Error("Degree not found");
     }
 
-    return await degreeRepository.deleteDegree(degreeId);
+    return await degreeDAO.deleteDegree(degreeId);
   },
 };
 

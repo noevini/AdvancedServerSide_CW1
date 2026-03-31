@@ -2,9 +2,9 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 
-const userRepository = require("../repositories/userRepository");
-const emailVerificationTokenRepository = require("../repositories/emailVerificationTokenRepository");
-const passwordResetTokenRepository = require("../repositories/passwordresetrepository");
+const userDAO = require("../dao/userDAO");
+const emailVerificationTokenDAO = require("../dao/emailVerificationTokenDAO");
+const passwordResetDAO = require("../dao/passwordResetDAO");
 
 // Validates password strength — min 8 chars, uppercase, number, special character
 const validatePassword = (password) => {
@@ -33,7 +33,7 @@ const authService = {
     // Validate password complexity before hashing
     validatePassword(password);
 
-    const existingUser = await userRepository.findByEmail(email);
+    const existingUser = await userDAO.findByEmail(email);
 
     if (existingUser) {
       throw new Error("Email already registered");
@@ -42,13 +42,13 @@ const authService = {
     // Hash password with bcrypt using 10 salt rounds
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await userRepository.createUser(email, hashedPassword);
+    const newUser = await userDAO.createUser(email, hashedPassword);
 
     // Generate a cryptographically secure single-use verification token
     const verificationToken = crypto.randomBytes(32).toString("hex");
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
 
-    await emailVerificationTokenRepository.createToken(
+    await emailVerificationTokenDAO.createToken(
       newUser.id,
       verificationToken,
       expiresAt,
@@ -65,7 +65,7 @@ const authService = {
       throw new Error("Email and password are required");
     }
 
-    const user = await userRepository.findByEmail(email);
+    const user = await userDAO.findByEmail(email);
 
     // Return same error for both cases to prevent user enumeration attacks
     if (!user) {
@@ -101,8 +101,7 @@ const authService = {
   },
 
   verifyEmail: async (token) => {
-    const storedToken =
-      await emailVerificationTokenRepository.findByToken(token);
+    const storedToken = await emailVerificationTokenDAO.findByToken(token);
 
     if (!storedToken) {
       throw new Error("Invalid verification token");
@@ -117,18 +116,16 @@ const authService = {
       throw new Error("Verification token has expired");
     }
 
-    await userRepository.markEmailAsVerified(storedToken.user_id);
+    await userDAO.markEmailAsVerified(storedToken.user_id);
 
     // Mark token as used so it cannot be used again
-    await emailVerificationTokenRepository.markAsUsed(storedToken.id);
+    await emailVerificationTokenDAO.markAsUsed(storedToken.id);
 
-    return {
-      message: "Email verified successfully",
-    };
+    return { message: "Email verified successfully" };
   },
 
   requestPasswordReset: async (email) => {
-    const user = await userRepository.findByEmail(email);
+    const user = await userDAO.findByEmail(email);
 
     if (!user) {
       throw new Error("User not found");
@@ -138,11 +135,7 @@ const authService = {
     const resetToken = crypto.randomBytes(32).toString("hex");
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
 
-    await passwordResetTokenRepository.createToken(
-      user.id,
-      resetToken,
-      expiresAt,
-    );
+    await passwordResetDAO.createToken(user.id, resetToken, expiresAt);
 
     return {
       message: "Password reset token generated successfully",
@@ -151,7 +144,7 @@ const authService = {
   },
 
   resetPassword: async (token, newPassword) => {
-    const storedToken = await passwordResetTokenRepository.findByToken(token);
+    const storedToken = await passwordResetDAO.findByToken(token);
 
     if (!storedToken) {
       throw new Error("Invalid reset token");
@@ -171,20 +164,16 @@ const authService = {
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    await userRepository.updatePassword(storedToken.user_id, hashedPassword);
+    await userDAO.updatePassword(storedToken.user_id, hashedPassword);
 
     // Mark token as used so it cannot be used again
-    await passwordResetTokenRepository.markAsUsed(storedToken.id);
+    await passwordResetDAO.markAsUsed(storedToken.id);
 
-    return {
-      message: "Password reset successfully",
-    };
+    return { message: "Password reset successfully" };
   },
 
   logoutUser: async () => {
-    return {
-      message: "Logout successful",
-    };
+    return { message: "Logout successful" };
   },
 };
 

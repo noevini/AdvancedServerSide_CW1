@@ -1,15 +1,15 @@
-const shortCourseRepository = require("../repositories/shortCourseRepository");
-const profileRepository = require("../repositories/profileRepository");
+const shortCourseDAO = require("../dao/shortCourseDAO");
+const profileDAO = require("../dao/profileDAO");
 
 const shortCourseService = {
   createShortCourse: async (userId, courseName, provider, yearCompleted) => {
-    const profile = await profileRepository.findByUserId(userId);
+    const profile = await profileDAO.findByUserId(userId);
 
     if (!profile) {
       throw new Error("Profile not found for this user");
     }
 
-    return await shortCourseRepository.createShortCourse(
+    return await shortCourseDAO.createShortCourse(
       profile.id,
       courseName,
       provider,
@@ -18,13 +18,13 @@ const shortCourseService = {
   },
 
   getShortCourses: async (userId) => {
-    const profile = await profileRepository.findByUserId(userId);
+    const profile = await profileDAO.findByUserId(userId);
 
     if (!profile) {
       throw new Error("Profile not found for this user");
     }
 
-    return await shortCourseRepository.findByProfileId(profile.id);
+    return await shortCourseDAO.findByProfileId(profile.id);
   },
 
   updateShortCourse: async (
@@ -34,19 +34,19 @@ const shortCourseService = {
     provider,
     yearCompleted,
   ) => {
-    const profile = await profileRepository.findByUserId(userId);
+    const profile = await profileDAO.findByUserId(userId);
 
     if (!profile) {
       throw new Error("Profile not found for this user");
     }
 
-    const shortCourse = await shortCourseRepository.findById(shortCourseId);
+    const shortCourse = await shortCourseDAO.findById(shortCourseId);
 
     if (!shortCourse || shortCourse.profile_id !== profile.id) {
       throw new Error("Short course not found");
     }
 
-    return await shortCourseRepository.updateShortCourse(
+    return await shortCourseDAO.updateShortCourse(
       shortCourseId,
       courseName,
       provider,
@@ -55,19 +55,19 @@ const shortCourseService = {
   },
 
   deleteShortCourse: async (userId, shortCourseId) => {
-    const profile = await profileRepository.findByUserId(userId);
+    const profile = await profileDAO.findByUserId(userId);
 
     if (!profile) {
       throw new Error("Profile not found for this user");
     }
 
-    const shortCourse = await shortCourseRepository.findById(shortCourseId);
+    const shortCourse = await shortCourseDAO.findById(shortCourseId);
 
     if (!shortCourse || shortCourse.profile_id !== profile.id) {
       throw new Error("Short course not found");
     }
 
-    return await shortCourseRepository.deleteShortCourse(shortCourseId);
+    return await shortCourseDAO.deleteShortCourse(shortCourseId);
   },
 };
 

@@ -10,6 +10,20 @@ const router = express.Router();
  *   post:
  *     summary: Register a new alumni user
  *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, password]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: test@westminster.ac.uk
+ *               password:
+ *                 type: string
+ *                 example: Test@1234
  */
 router.post("/register", authController.register);
 
@@ -19,6 +33,20 @@ router.post("/register", authController.register);
  *   post:
  *     summary: Login and receive a JWT token
  *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, password]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: test@westminster.ac.uk
+ *               password:
+ *                 type: string
+ *                 example: Test@1234
  */
 router.post("/login", authController.login);
 
@@ -28,6 +56,17 @@ router.post("/login", authController.login);
  *   post:
  *     summary: Verify email with token
  *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [token]
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 example: abc123
  */
 router.post("/verify-email", authController.verifyEmail);
 
@@ -37,6 +76,17 @@ router.post("/verify-email", authController.verifyEmail);
  *   post:
  *     summary: Request a password reset token
  *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: test@westminster.ac.uk
  */
 router.post("/request-password-reset", authController.requestPasswordReset);
 
@@ -46,6 +96,20 @@ router.post("/request-password-reset", authController.requestPasswordReset);
  *   post:
  *     summary: Reset password using token
  *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [token, new_password]
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 example: abc123
+ *               new_password:
+ *                 type: string
+ *                 example: NewTest@1234
  */
 router.post("/reset-password", authController.resetPassword);
 

@@ -12,21 +12,18 @@ const csrfMiddleware = require("./middleware/csrfMiddleware");
 
 const app = express();
 
-// Security headers — sets X-Content-Type-Options, X-Frame-Options, etc.
-app.use(helmet());
+// Security headers
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+  }),
+);
 
-// CORS — only allow requests from known origins
-const allowedOrigins = ["http://localhost:3000", "http://localhost:5173"];
-
+// CORS — allow all origins in development
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: true,
     credentials: true,
   }),
 );
@@ -50,7 +47,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// Endpoint for the client to get a CSRF token before making state-changing requests
+// Endpoint for the client to get a CSRF token
 app.get("/csrf-token", (req, res) => {
   const { secret, token } = generateToken();
   res.cookie("csrf_secret", secret, {
@@ -64,7 +61,15 @@ app.get("/csrf-token", (req, res) => {
 // Apply CSRF protection to all routes
 app.use(csrfMiddleware);
 
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+  }),
+);
 app.use("/", routes);
 
 module.exports = app;

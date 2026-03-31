@@ -51,11 +51,11 @@ app.use((req, res, next) => {
 app.get("/csrf-token", (req, res) => {
   const { secret, token } = generateToken();
   res.cookie("csrf_secret", secret, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    httpOnly: false,
+    secure: false,
+    sameSite: "lax",
   });
-  res.json({ csrf_token: token });
+  res.json({ csrf_token: token, csrf_secret: secret });
 });
 
 // Apply CSRF protection to all routes

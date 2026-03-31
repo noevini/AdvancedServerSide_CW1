@@ -1,6 +1,7 @@
 const express = require("express");
 const bidController = require("../controllers/bidController");
 const authMiddleware = require("../middleware/authMiddleware");
+const apiTokenMiddleware = require("../middleware/apiTokenMiddleware");
 
 const router = express.Router();
 
@@ -132,6 +133,6 @@ router.post(
  *     summary: Get today's active featured alumnus
  *     tags: [Bids]
  */
-router.get("/active", bidController.getActiveAlumnus);
+router.get("/active", apiTokenMiddleware, bidController.getActiveAlumnus);
 
 module.exports = router;

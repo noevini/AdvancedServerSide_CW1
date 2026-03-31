@@ -1,8 +1,6 @@
 const { verifyToken } = require("../config/csrf");
 
-// Validates CSRF token on all state-changing requests (POST, PUT, DELETE)
 const csrfMiddleware = (req, res, next) => {
-  // Skip CSRF for GET requests, API docs and auth endpoints
   if (
     req.method === "GET" ||
     req.path.startsWith("/api-docs") ||
@@ -12,7 +10,7 @@ const csrfMiddleware = (req, res, next) => {
     return next();
   }
 
-  const secret = req.cookies["csrf_secret"];
+  const secret = req.cookies["csrf_secret"] || req.headers["x-csrf-secret"];
   const token = req.headers["x-csrf-token"];
 
   if (!secret || !token) {

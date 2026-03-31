@@ -93,7 +93,7 @@ router.post("/request-password-reset", authController.requestPasswordReset);
 /**
  * @swagger
  * /auth/reset-password:
- *   post:
+ *   put:
  *     summary: Reset password using token
  *     tags: [Auth]
  *     requestBody:
@@ -111,7 +111,7 @@ router.post("/request-password-reset", authController.requestPasswordReset);
  *                 type: string
  *                 example: NewTest@1234
  */
-router.post("/reset-password", authController.resetPassword);
+router.put("/reset-password", authController.resetPassword);
 
 /**
  * @swagger

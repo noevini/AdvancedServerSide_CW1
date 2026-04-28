@@ -141,8 +141,7 @@ const initDb = () => {
         )
       `);
 
-      db.run(
-        `
+      db.run(`
         CREATE TABLE IF NOT EXISTS api_usage_logs (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           token_id INTEGER NOT NULL,
@@ -151,16 +150,29 @@ const initDb = () => {
           accessed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
           FOREIGN KEY (token_id) REFERENCES api_tokens(id) ON DELETE CASCADE
         )
-      `,
-        (err) => {
-          if (err) {
-            console.error("Database initialisation error:", err.message);
-            return reject(err);
-          }
-          console.log("Database tables initialised successfully");
-          resolve();
-        },
+      `);
+
+      db.run(
+        `ALTER TABLE api_tokens ADD COLUMN permissions TEXT DEFAULT 'read:alumni,read:analytics'`,
+        () => {},
       );
+      db.run(
+        `ALTER TABLE employment_history ADD COLUMN industry TEXT`,
+        () => {},
+      );
+      db.run(
+        `ALTER TABLE employment_history ADD COLUMN location TEXT`,
+        () => {},
+      );
+
+      db.run("SELECT 1", (err) => {
+        if (err) {
+          console.error("Database initialisation error:", err.message);
+          return reject(err);
+        }
+        console.log("Database tables initialised successfully");
+        resolve();
+      });
     });
   });
 };

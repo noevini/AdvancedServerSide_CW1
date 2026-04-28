@@ -1,24 +1,12 @@
 const db = require("../config/database");
 
 const apiTokenRepository = {
-  createToken: (token, clientName) => {
+  createToken: (token, clientName, permissions = "read:alumni,read:analytics") => {
     return new Promise((resolve, reject) => {
-      const sql = `
-        INSERT INTO api_tokens (token, client_name)
-        VALUES (?, ?)
-      `;
-
-      db.run(sql, [token, clientName], function (err) {
-        if (err) {
-          return reject(err);
-        }
-
-        resolve({
-          id: this.lastID,
-          token,
-          client_name: clientName,
-          is_revoked: 0,
-        });
+      const sql = `INSERT INTO api_tokens (token, client_name, permissions) VALUES (?, ?, ?)`;
+      db.run(sql, [token, clientName, permissions], function (err) {
+        if (err) return reject(err);
+        resolve({ id: this.lastID, token, client_name: clientName, permissions, is_revoked: 0 });
       });
     });
   },
